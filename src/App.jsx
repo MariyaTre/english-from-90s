@@ -33,8 +33,20 @@ function App() {
         <main className="desktop">
             <div className="workspace">
                 {openedFolder
-                    ? <p>Открыта папка: {openedFolder}</p>
-                    : <p>Рабочий стол</p>
+                    ? <div className="folder-window">
+                        <div className="folder-window-header">
+                            <span className="folder-window-title">
+                                {openedFolder}
+                            </span>
+                            <button className="folder-window-header-button"
+                                    onClick={() => openFolder('')}>
+                                ×
+                            </button>
+                        </div>
+                        <div className="folder-window-content">
+                        </div>
+                    </div>
+                    : null
                 }
                 {folders.map((folderName) => (
                     <div className="folder" key={folderName}>
