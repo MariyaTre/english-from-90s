@@ -23,6 +23,12 @@ function App() {
         'Новый документ 3'
     ]
 
+    const folderContents = {
+        'Новая папка 1': ['Новый документ 1', 'Новый документ 2'],
+        'Новая папка 2': ['Новый документ 3'],
+        'Новая папка 3': []
+    }
+
     function openFolder(folderName) {
         console.log('Папка открыта', folderName);
         setOpenFolder(folderName);
@@ -44,6 +50,14 @@ function App() {
                             </button>
                         </div>
                         <div className="folder-window-content">
+                            {folderContents[openedFolder].map((documentName) => (
+                                <div className="document" key={documentName}>
+                                    <img className="document-img"
+                                         src={document}
+                                         alt={document}/>
+                                    <p className="document-text">{documentName}</p>
+                                </div>
+                                ))}
                         </div>
                     </div>
                     : null

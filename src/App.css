@@ -157,3 +157,6 @@ border-radius: 5px;
   display: flex;
   margin-left: 5px;
 }
+.folder-window-content .document-text {
+  color: black;
+}
