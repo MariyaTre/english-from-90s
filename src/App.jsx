@@ -7,6 +7,8 @@ import TimeButton from './assets/TimeButton.png'
 import folder from './assets/folder.png'
 import document from './assets/Document.png'
 import {useState} from 'react'
+import pencil from './assets/pencil.png'
+import hand from './assets/hand.png'
 
 function App() {
 
@@ -47,7 +49,6 @@ function App() {
     }
 
 
-
     return (
         <main className="desktop">
             <div className="workspace">
@@ -85,12 +86,65 @@ function App() {
                                 {openedDocument}
                             </span>
                             <button className="document-window-header-button"
-                            onClick={() => openDocument('')}>
+                                    onClick={() => openDocument('')}>
                                 ×
                             </button>
                         </div>
                         <div className="document-window-content">
-
+                            <div className="content-top">
+                                <button className="bottom-play">
+                                    Играть
+                                </button>
+                                <button className="bottom-training">
+                                    Тренировка
+                                </button>
+                                <div className="content-top-input-field">
+                                    <p className="workout-sequence">
+                                        Последовательность тренировки
+                                    </p>
+                                </div>
+                                <button className="bottom-pencil">
+                                    <img className="pencil"
+                                         src={pencil}
+                                         alt={pencil}/>
+                                </button>
+                            </div>
+                            <div className="content-table">
+                                <table className="table">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th>АНГЛИЙСКИЙ</th>
+                                        <th>РУССКИЙ</th>
+                                        <th>АНГЛИЙСКИЙ пример</th>
+                                        <th>РУССКИЙ пример</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>1.</td>
+                                        <td>
+                                            <img className="hand-img"
+                                                 src={hand}
+                                                 alt={hand}/>
+                                        </td>
+                                        <td>Monday</td>
+                                        <td>Понедельник</td>
+                                        <td>I start my week with a busy Monday</td>
+                                        <td>Я начинаю свою неделю с загруженного понедельника</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="content-bottom">
+                                <button className="button-add">
+                                    Добавить
+                                </button>
+                                <button className="button-delete">
+                                    Удалить
+                                </button>
+                            </div>
                         </div>
                     </div>
                     : null}

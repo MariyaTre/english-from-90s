@@ -121,7 +121,7 @@ border-radius: 5px;
 }
 .folder-window-header {
   height: 24px;
-  background-color: #555555;
+  background-color: #1b2c63;
   display: flex;
   font-family: Tahoma, Arial, sans-serif;
   font-size: 15px;
@@ -207,8 +207,115 @@ border-radius: 5px;
   border-bottom: 2px solid #D4D0C8;
   border-right: 2px solid #D4D0C8;
   border-left: 2px solid #404040;
+  flex-direction: column;
 }
 .document-window-title {
   display: flex;
   margin-left: 5px;
+}
+.pencil {
+  height: 30px;
+  width: auto;
+}
+.content-top {
+  display: flex;
+  background-color: #FFFFFF;
+  flex-direction: row;
+  height: 30px;
+  width: 100vw;
+}
+.bottom-pencil {
+  display: flex;
+  margin-left: auto;
+  justify-content: center;
+  align-items: center;
+  width: 35px;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #D4D0C8;
+  border-left: 2px solid #FFFFFF;
+  border-top: 2px solid #FFFFFF;
+}
+.content-top-input-field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  background-color: #FFFFFF;
+  border-top: 3px solid #808080;
+  border-bottom: 3px solid #D4D0C8;
+  border-left: 3px solid #808080;
+  border-right: 3px solid #D4D0C8;
+  margin-left: 2px;
+}
+.workout-sequence {
+  display: flex;
+  margin: 0;
+}
+.content-top {
+  display: flex;
+  border-top: 2px solid #FFFFFF;
+  border-bottom: 3px solid #808080;
+  border-left: 2px solid #FFFFFF;
+  border-right: 2px solid #808080;
+  width: auto;
+}
+.bottom-play {
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #D4D0C8;
+  margin-right: 2px;
+}
+.bottom-training {
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #D4D0C8;
+}
+.content-bottom {
+  display: flex;
+  margin-top: auto;
+  background-color: #c6c6c6;
+  height:35px;
+  border-bottom: 1px solid #808080;
+  border-left: 2px solid #FFFFFF;
+  border-right: 1px solid #808080;
+  border-top: 2px solid #FFFFFF;
+}
+.button-delete {
+  display: flex;
+  margin-left: auto;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3px;
+  margin-right: 3px;
+}
+.button-add {
+display: flex;
+  border-top: 2px solid #FFFFFF;
+  border-left: 2px solid #FFFFFF;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3px;
+  margin-left: 3px;
+}
+.content-table {
+  display: flex;
+  flex: 1;
+  background-color: #FFFFFF;
+  border-bottom: 2px solid #D4D0C8;
+  border-left: 2px solid #D4D0C8;
+  border-right: 2px solid #D4D0C8;
+}
+.hand-img {
+  height: 30px;
+  width: auto;
 }
