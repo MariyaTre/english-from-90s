@@ -167,11 +167,11 @@ border-radius: 5px;
 .document-window {
   display: flex;
   flex-direction: column;
-  width: 500px;
-  height: 400px;
+  width: 800px;
+  height: 600px;
   border: 3px solid #D4D0C8;
   position: absolute;
-  top: 250px;
+  top: 30px;
   left: 300px;
   z-index: 3;
 }
@@ -314,8 +314,22 @@ display: flex;
   border-bottom: 2px solid #D4D0C8;
   border-left: 2px solid #D4D0C8;
   border-right: 2px solid #D4D0C8;
+  align-items: flex-start;
 }
 .hand-img {
   height: 30px;
   width: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  border: 1px solid #808080;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 15px;
+  text-align: center;
+  padding: 6px;
 }

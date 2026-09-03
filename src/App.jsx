@@ -32,6 +32,14 @@ function App() {
         'Новая папка 2': ['Новый документ 3'],
         'Новая папка 3': []
     }
+    const tableContents = [
+        {
+            'english': 'Monday',
+            'russian': 'Понедельник',
+            'englishExample': 'I start my week with a busy Monday',
+            'russianExample': 'Я начинаю свою неделю с загруженного понедельника'
+        }
+    ]
 
     function openFolder(folderName) {
         console.log('Папка открыта', folderName);
@@ -115,25 +123,27 @@ function App() {
                                     <tr>
                                         <th></th>
                                         <th></th>
-                                        <th>АНГЛИЙСКИЙ</th>
-                                        <th>РУССКИЙ</th>
-                                        <th>АНГЛИЙСКИЙ пример</th>
-                                        <th>РУССКИЙ пример</th>
+                                        <th>Английский</th>
+                                        <th>Русский</th>
+                                        <th>Английский пример</th>
+                                        <th>Русский пример</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td>1.</td>
+                                    {tableContents.map((row, index) => (
+                                    <tr key={row.english}>
+                                        <td>{index + 1}.</td>
                                         <td>
                                             <img className="hand-img"
                                                  src={hand}
                                                  alt={hand}/>
                                         </td>
-                                        <td>Monday</td>
-                                        <td>Понедельник</td>
-                                        <td>I start my week with a busy Monday</td>
-                                        <td>Я начинаю свою неделю с загруженного понедельника</td>
+                                        <td>{row.english}</td>
+                                        <td>{row.russian}</td>
+                                        <td>{row.englishExample}</td>
+                                        <td>{row.russianExample}</td>
                                     </tr>
+                                    ))}
                                     </tbody>
                                 </table>
                             </div>
