@@ -1,14 +1,13 @@
-import './App.css'
-import logoButton from './assets/logoButton.png'
-import HomeButton from './assets/HomeButton.png'
-import EnButton from './assets/EnButton.png'
-import ToolsButton from './assets/ToolsButton.png'
-import TimeButton from './assets/TimeButton.png'
-import folder from './assets/folder.png'
-import document from './assets/Document.png'
+import '@/App.css'
+import logoButton from '@/assets/logoButton.png'
+import HomeButton from '@/assets/HomeButton.png'
+import EnButton from '@/assets/EnButton.png'
+import ToolsButton from '@/assets/ToolsButton.png'
+import TimeButton from '@/assets/TimeButton.png'
 import {useState} from 'react'
-import pencil from './assets/pencil.png'
-import hand from './assets/hand.png'
+import pencil from '@/assets/pencil.png'
+import hand from '@/assets/hand.png'
+import { Folder, Document } from '@/components/elements.jsx'
 
 function App() {
 
@@ -75,18 +74,24 @@ function App() {
                             {folderContents[openedFolder].length === 0
                                 ? <p className="folder-window-content-p">Папка пуста</p>
                                 : folderContents[openedFolder].map((documentName) => (
-                                    <div className="document" key={documentName}>
-                                        <img className="document-img"
-                                             src={document}
-                                             alt={document}
-                                             onClick={() => openDocument(documentName)}/>
-                                        <p className="document-text">{documentName}</p>
-                                    </div>
+                                    <Document name={documentName} open={openDocument}/>
                                 ))}
                         </div>
                     </div>
                     : null
                 }
+                {/*
+                конструкцию
+                
+                openedDocument ? ... : null
+                
+                можно заменить на
+                
+                openedDocument && ...
+
+                вернется false, а false реакт не отображает
+                но это больше про вкусовые предпочтения
+                 */}
                 {openedDocument
                     ? <div className="document-window">
                         <div className="document-window-header">
@@ -159,22 +164,10 @@ function App() {
                     </div>
                     : null}
                 {folders.map((folderName) => (
-                    <div className="folder" key={folderName}>
-                        <img className="folder-img"
-                             src={folder}
-                             alt={folder}
-                             onClick={() => openFolder(folderName)}/>
-                        <p className="folder-text">{folderName}</p>
-                    </div>
+                    <Folder name={folderName} open={openFolder}/>
                 ))}
                 {documents.map((documentName) => (
-                    <div className="document" key={documentName}>
-                        <img className="document-img"
-                             src={document}
-                             alt={document}
-                             onClick={() => openDocument(documentName)}/>
-                        <p className="document-text">{documentName}</p>
-                    </div>
+                    <Document name={documentName} open={openDocument}/>
                 ))}
             </div>
             <footer className="bottom-panel">
