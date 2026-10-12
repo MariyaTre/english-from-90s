@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="diagram-template-version" content="1">
+  <meta name="description" content="Шаблон учебной схемы: код, значения, передача данных и консоль.">
+  <title>Передача значений в метод — Маша и код</title>
+  <!-- ШАБЛОН v1. Скопировать в topics/<topic>/vN.html.
+       Изменить title, заголовок, пример, области и массив steps.
+       Сохранить визуальные обозначения. Это демонстрация, не задание Маши.
+       Состояния заданы явно: страница НЕ компилирует и НЕ запускает Java.
+       Для статической схемы убрать nav и script, заполнить панели в HTML.
+       Перед показом проверить все состояния и узкий экран по README.md. -->
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f6fa; --surface: #ffffff; --ink: #203048;
+      --muted: #53627a; --line: #d4dce8;
+      --action: #244fbd; --action-bg: #eaf0ff;
+      --result: #176743; --result-bg: #e8f5ed;
+      --code-bg: #f8faff; --focus: #a14913;
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    main { max-width: 1160px; margin: auto; padding: 36px 24px 48px; }
+    h1 { margin: 4px 0 12px; font-size: clamp(1.7rem, 3.5vw, 2.35rem); line-height: 1.2; }
+    h2 { font-size: 1rem; margin: 0 0 12px; }
+    p { margin: 0 0 12px; }
+    .eyebrow { color: var(--action); font-weight: 650; letter-spacing: .035em; font-size: .8rem; }
+    .lead { color: var(--muted); max-width: 76ch; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 20px 0; font-size: .875rem; }
+    .legend span { display: flex; align-items: center; gap: 8px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; background: var(--action); }
+    .swatch.result { background: var(--result); }
+    .swatch.console { background: var(--muted); }
+    .step { background: var(--action-bg); border: 1px solid #c0d0f9; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+    .step-label { color: var(--action); font-size: .85rem; font-weight: 650; }
+    .step h2 { font-size: 1.2rem; margin: 6px 0; }
+    .step p { margin: 0; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 18px; }
+    .panel + .panel { margin-top: 16px; }
+    .small { color: var(--muted); font-size: .85rem; }
+    .code { margin: 0; padding: 6px 0; background: var(--code-bg); border-radius: 8px; counter-reset: code-line; }
+    .code li { list-style: none; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; padding: 7px 8px; border-left: 3px solid transparent; }
+    .code li::before { counter-increment: code-line; content: counter(code-line); color: var(--muted); font: .8rem/1.6 ui-monospace, monospace; }
+    code { font: .875rem/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; overflow-wrap: anywhere; }
+    .code .active { border-left-color: var(--action); background: var(--action-bg); }
+    .code .gap { min-height: 16px; padding-top: 0; padding-bottom: 0; }
+    .scope-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .scope-title code { color: var(--action); }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { text-align: left; padding: 9px 5px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; vertical-align: top; }
+    th { color: var(--muted); font-size: .75rem; font-weight: 600; }
+    th:first-child { width: 18%; } th:last-child { width: 32%; }
+    th { white-space: nowrap; }
+    .method-code { counter-reset: code-line 5; }
+    .method-label { margin-top: 18px; }
+    td { font-size: .875rem; } td:last-child { font-variant-numeric: tabular-nums; }
+    .not-yet { color: var(--muted); font-size: .8rem; }
+    .value-result { color: var(--result); font-weight: 650; }
+    .method-scope { margin-top: 18px; padding: 14px; background: var(--code-bg); border: 1px dashed var(--line); border-radius: 8px; }
+    .method-scope[data-active="true"] { border-color: var(--action); background: var(--action-bg); }
+    .console-output { background: #202b3c; color: #f3f7ff; border-radius: 8px; padding: 14px; margin: 0; white-space: pre-wrap; min-height: 54px; font: .9rem/1.6 ui-monospace, monospace; }
+    .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: center; margin-top: 20px; }
+    .flow-node { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+    .flow-node p { margin: 0; font-size: .875rem; overflow-wrap: anywhere; }
+    .flow-node strong { display: block; margin-bottom: 6px; font-size: .85rem; }
+    .flow-node[data-result="true"] { background: var(--result-bg); border-color: #afd4bf; }
+    .arrow { text-align: center; color: var(--action); }
+    .arrow span { display: block; font-size: 1.35rem; line-height: 1.2; }
+    .arrow small { font-size: .75rem; }
+    nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    button { min-height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; padding: 8px 18px; cursor: pointer; }
+    button.primary { background: var(--action); border-color: var(--action); color: white; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .hint { margin: 12px 0 0; font-size: .875rem; color: var(--muted); }
+    footer { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; }
+    footer p { margin-bottom: 8px; }
+    noscript { display: block; padding: 16px; background: var(--action-bg); }
+    @media (max-width: 760px) {
+      main { padding: 24px 16px; }
+      .layout { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; gap: 8px; }
+      .arrow span { transform: rotate(90deg); }
+      .arrow { display: flex; justify-content: center; align-items: center; gap: 12px; }
+      .panel { padding: 14px; }
+    }
+    @media print {
+      body { background: white; } main { padding: 0; } nav, .hint { display: none; }
+      .panel, .step, .flow-node { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">МАША И КОД · JAVA · ПЕРЕДАЧА ЗНАЧЕНИЙ</p>
+    <h1>Как значения проходят через метод</h1>
+    <p class="lead">Длина ткани и припуск передаются в расчёт. Посмотрим, где появляются параметры, куда возвращается число и когда оно попадает в консоль.</p>
+  </header>
+  <div class="legend" aria-label="Обозначения">
+    <span><i class="swatch" aria-hidden="true"></i>Действие шага</span>
+    <span><i class="swatch result" aria-hidden="true"></i>Полученный результат</span>
+    <span><i class="swatch console" aria-hidden="true"></i>Вывод — отдельно</span>
+  </div>
+  <section class="step" aria-live="polite" aria-atomic="true">
+    <div class="step-label" id="step-number">Шаг 0 из 5 · До выполнения</div>
+    <h2 id="step-title">Начинаем в main</h2>
+    <p id="step-description">Локальные переменные ещё не объявлены. Метод addAllowance описан, но его ещё не вызывали.</p>
+  </section>
+  <div class="layout">
+    <section class="panel" aria-labelledby="code-heading">
+      <h2 id="code-heading">Код примера</h2>
+      <p class="small">Внутри main; заголовок точки входа опущен.</p>
+      <ol class="code" aria-label="Фрагмент Java с номерами строк">
+        <li data-line="1"><code>int fabricLength = 12;</code></li>
+        <li data-line="2"><code>int allowance = 3;</code></li>
+        <li data-line="3"><code>int cutLength = addAllowance(fabricLength, allowance);</code></li>
+        <li data-line="4"><code>System.out.println(cutLength);</code></li>
+      </ol>
+      <p class="small method-label">Отдельный метод того же класса, вне main:</p>
+      <ol class="code method-code" aria-label="Объявление отдельного метода Java">
+        <li data-line="6"><code>static int addAllowance(int length, int extra) {</code></li>
+        <li data-line="7"><code>&nbsp;&nbsp;return length + extra;</code></li>
+        <li data-line="8"><code>}</code></li>
+      </ol>
+      <p class="hint">Класс опущен. Подсвечено действие разбираемого шага; порядок записи методов не задаёт порядок вызовов.</p>
+    </section>
+    <div>
+      <section class="panel" aria-labelledby="values-heading">
+        <div class="scope-title"><h2 id="values-heading">Текущие значения</h2><code>main</code></div>
+        <table aria-label="Локальные переменные main">
+          <thead><tr><th scope="col">Тип</th><th scope="col">Имя</th><th scope="col">Значение</th></tr></thead>
+          <tbody>
+            <tr><td><code>int</code></td><td><code>fabricLength</code></td><td id="fabric-value" class="not-yet">Не объявлено</td></tr>
+            <tr><td><code>int</code></td><td><code>allowance</code></td><td id="allowance-value" class="not-yet">Не объявлено</td></tr>
+            <tr><td><code>int</code></td><td><code>cutLength</code></td><td id="cut-value" class="not-yet">Не объявлено</td></tr>
+          </tbody>
+        </table>
+        <div class="method-scope" id="method-scope" data-active="false">
+          <div class="scope-title"><h2>Параметры вызова</h2><code>addAllowance</code></div>
+          <p class="small" id="method-note">Вызова пока нет.</p>
+          <table id="parameters" aria-label="Параметры текущего вызова" hidden>
+            <thead><tr><th scope="col">Тип</th><th scope="col">Имя</th><th scope="col">Значение</th></tr></thead>
+            <tbody><tr><td><code>int</code></td><td><code>length</code></td><td>12</td></tr><tr><td><code>int</code></td><td><code>extra</code></td><td>3</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="console-heading">
+        <h2 id="console-heading">Консоль</h2>
+        <pre class="console-output" id="console-output" aria-label="Состояние вывода">Вывода пока нет</pre>
+      </section>
+    </div>
+  </div>
+  <section class="flow" aria-label="Путь значений">
+    <div class="flow-node"><strong>Аргументы вызова</strong><p id="flow-input">Вызов ещё не выполнен</p></div>
+    <div class="arrow" aria-hidden="true"><span>→</span><small>передача</small></div>
+    <div class="flow-node"><strong>Параметры метода</strong><p id="flow-parameters">Значения появятся при вызове</p></div>
+    <div class="arrow" aria-hidden="true"><span>→</span><small>возврат</small></div>
+    <div class="flow-node" id="result-node" data-result="false"><strong>Результат в main</strong><p id="flow-result">Результата пока нет</p></div>
+  </section>
+  <nav aria-label="Шаги выполнения">
+    <button type="button" id="previous" disabled>← Назад</button>
+    <button type="button" class="primary" id="next">Дальше →</button>
+  </nav>
+  <p class="hint">Перед следующим шагом предскажи, какие значения изменятся и появится ли вывод.</p>
+  <noscript>Для переключения шагов включите JavaScript. Сейчас показано начальное состояние.</noscript>
+  <footer>
+    <p><strong>Граница модели.</strong> Показаны логические состояния, а не физические ячейки RAM и не точные остановки отладчика. Для int передаётся копия числового значения; объекты здесь не рассматриваются.</p>
+    <p>Это иллюстрация с заранее проверенными состояниями, не запуск Java. Возврат числа, присваивание и вывод — разные действия. Недоступность параметра после вызова не означает немедленное стирание физической памяти.</p>
+    <p>Учебный материал · Версия шаблона 1 · Демонстрационный пример, не самостоятельное задание.</p>
+  </footer>
+</main>
+<script>
+  // Менять весь набор согласованно: подписи, подсветку, значения и вывод.
+  const steps = [
+    { title: 'Начинаем в main', text: 'Локальные переменные ещё не объявлены. Метод addAllowance описан, но его ещё не вызывали.', lines: [], values: [null, null, null] },
+    { title: 'Сохранили длину ткани', text: 'После строки 1 локальная переменная fabricLength типа int содержит 12. Печати не было.', lines: [1], values: [12, null, null] },
+    { title: 'Сохранили припуск', text: 'После строки 2 allowance содержит 3. fabricLength по-прежнему содержит 12. Оба значения доступны в main.', lines: [2], values: [12, 3, null] },
+    { title: 'Вошли в вызванный метод', text: 'При выполнении строки 3 сначала вызывается addAllowance: значения 12 и 3 копируются в параметры length и extra. main ждёт результат; cutLength ещё не получил значение.', lines: [3, 6], values: [12, 3, 'Ожидает результат'] },
+    { title: 'Вернули число и присвоили результат', text: 'return передал 15 в место вызова. Строка 3 завершилась присваиванием: cutLength содержит 15. Исходные значения 12 и 3 не изменились. Вывода ещё нет.', lines: [7, 3], values: [12, 3, 15] },
+    { title: 'Отдельно вывели результат', text: 'После строки 4 println вывел 15. Текущее значение cutLength тоже 15, но переменная и текст в консоли — не одно и то же.', lines: [4], values: [12, 3, 15] }
+  ];
+  let current = 0;
+  const byId = id => document.getElementById(id);
+  function render() {
+    const step = steps[current];
+    byId('step-number').textContent = `Шаг ${current} из ${steps.length - 1} · ${current === 0 ? 'До выполнения' : 'Состояние после действия'}`;
+    byId('step-title').textContent = step.title;
+    byId('step-description').textContent = step.text;
+    document.querySelectorAll('[data-line]').forEach(line => {
+      const active = step.lines.includes(Number(line.dataset.line));
+      line.classList.toggle('active', active);
+      if (active) line.setAttribute('aria-current', 'step'); else line.removeAttribute('aria-current');
+    });
+    ['fabric-value', 'allowance-value', 'cut-value'].forEach((id, index) => {
+      const cell = byId(id), value = step.values[index];
+      cell.textContent = value === null ? 'Не объявлено' : String(value);
+      cell.className = typeof value !== 'number' ? 'not-yet' : (index === 2 ? 'value-result' : '');
+    });
+    const inMethod = current === 3;
+    byId('method-scope').dataset.active = String(inMethod);
+    byId('parameters').hidden = !inMethod;
+    byId('method-note').textContent = current < 3 ? 'Вызова пока нет.' : inMethod ? 'Эти имена доступны внутри текущего вызова. Следующее действие — return.' : 'Вызов завершён. Его параметры здесь больше недоступны.';
+    byId('console-output').textContent = current === 5 ? '15' : 'Вывода пока нет';
+    byId('flow-input').textContent = current < 3 ? 'Вызов ещё не выполнен' : 'fabricLength: 12 · allowance: 3';
+    byId('flow-parameters').textContent = current < 3 ? 'Значения появятся при вызове' : current === 3 ? 'length: 12 · extra: 3' : 'При вызове получили 12 и 3; вызов завершён';
+    byId('flow-result').textContent = current < 4 ? 'Результата пока нет' : 'return → 15 → cutLength';
+    byId('result-node').dataset.result = String(current >= 4);
+    byId('previous').disabled = current === 0;
+    byId('next').disabled = current === steps.length - 1;
+  }
+  byId('previous').addEventListener('click', () => { if (current > 0) { current--; render(); } });
+  byId('next').addEventListener('click', () => { if (current < steps.length - 1) { current++; render(); } });
+  render();
+</script>
+</body>
+</html>
