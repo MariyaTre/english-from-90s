@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="diagram-template-version" content="1">
+<title>Строки, значения и консоль — Маша и код</title>
+<style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f6fa; --surface: #ffffff; --ink: #203048;
+      --muted: #53627a; --line: #d4dce8;
+      --action: #244fbd; --action-bg: #eaf0ff;
+      --result: #176743; --result-bg: #e8f5ed;
+      --code-bg: #f8faff; --focus: #a14913;
+      font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    main { max-width: 1160px; margin: auto; padding: 36px 24px 48px; }
+    h1 { margin: 4px 0 12px; font-size: clamp(1.7rem, 3.5vw, 2.35rem); line-height: 1.2; }
+    h2 { font-size: 1rem; margin: 0 0 12px; }
+    p { margin: 0 0 12px; }
+    .eyebrow { color: var(--action); font-weight: 650; letter-spacing: .035em; font-size: .8rem; }
+    .lead { color: var(--muted); max-width: 76ch; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 20px 0; font-size: .875rem; }
+    .legend span { display: flex; align-items: center; gap: 8px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; background: var(--action); }
+    .swatch.result { background: var(--result); }
+    .swatch.console { background: var(--muted); }
+    .step { background: var(--action-bg); border: 1px solid #c0d0f9; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+    .step-label { color: var(--action); font-size: .85rem; font-weight: 650; }
+    .step h2 { font-size: 1.2rem; margin: 6px 0; }
+    .step p { margin: 0; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 18px; }
+    .panel + .panel { margin-top: 16px; }
+    .small { color: var(--muted); font-size: .85rem; }
+    .code { margin: 0; padding: 6px 0; background: var(--code-bg); border-radius: 8px; counter-reset: code-line; }
+    .code li { list-style: none; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; padding: 7px 8px; border-left: 3px solid transparent; }
+    .code li::before { counter-increment: code-line; content: counter(code-line); color: var(--muted); font: .8rem/1.6 ui-monospace, monospace; }
+    code { font: .875rem/1.6 ui-monospace, "Cascadia Code", Consolas, monospace; overflow-wrap: anywhere; }
+    .code .active { border-left-color: var(--action); background: var(--action-bg); }
+    .code .gap { min-height: 16px; padding-top: 0; padding-bottom: 0; }
+    .scope-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
+    .scope-title code { color: var(--action); }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { text-align: left; padding: 9px 5px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; vertical-align: top; }
+    th { color: var(--muted); font-size: .75rem; font-weight: 600; }
+    th:first-child { width: 18%; } th:last-child { width: 32%; }
+    th { white-space: nowrap; }
+    .method-code { counter-reset: code-line 5; }
+    .method-label { margin-top: 18px; }
+    td { font-size: .875rem; } td:last-child { font-variant-numeric: tabular-nums; }
+    .not-yet { color: var(--muted); font-size: .8rem; }
+    .value-result { color: var(--result); font-weight: 650; }
+    .method-scope { margin-top: 18px; padding: 14px; background: var(--code-bg); border: 1px dashed var(--line); border-radius: 8px; }
+    .method-scope[data-active="true"] { border-color: var(--action); background: var(--action-bg); }
+    .console-output { background: #202b3c; color: #f3f7ff; border-radius: 8px; padding: 14px; margin: 0; white-space: pre-wrap; min-height: 54px; font: .9rem/1.6 ui-monospace, monospace; }
+    .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: center; margin-top: 20px; }
+    .flow-node { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+    .flow-node p { margin: 0; font-size: .875rem; overflow-wrap: anywhere; }
+    .flow-node strong { display: block; margin-bottom: 6px; font-size: .85rem; }
+    .flow-node[data-result="true"] { background: var(--result-bg); border-color: #afd4bf; }
+    .arrow { text-align: center; color: var(--action); }
+    .arrow span { display: block; font-size: 1.35rem; line-height: 1.2; }
+    .arrow small { font-size: .75rem; }
+    nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    button { min-height: 44px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; padding: 8px 18px; cursor: pointer; }
+    button.primary { background: var(--action); border-color: var(--action); color: white; }
+    button:disabled { opacity: .5; cursor: default; }
+    button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .hint { margin: 12px 0 0; font-size: .875rem; color: var(--muted); }
+    footer { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; }
+    footer p { margin-bottom: 8px; }
+    noscript { display: block; padding: 16px; background: var(--action-bg); }
+    @media (max-width: 760px) {
+      main { padding: 24px 16px; }
+      .layout { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; gap: 8px; }
+      .arrow span { transform: rotate(90deg); }
+      .arrow { display: flex; justify-content: center; align-items: center; gap: 12px; }
+      .panel { padding: 14px; }
+    }
+    @media print {
+      body { background: white; } main { padding: 0; } nav, .hint { display: none; }
+      .panel, .step, .flow-node { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">МАША И КОД · РАЗБОР С ПРЕПОДАВАТЕЛЕМ</p>
+<h1>Число сохранили. Почему его ещё не видно?</h1>
+<p class="lead">Разберём пять действий внутри <code>main</code>. У каждого — своя работа: создать переменную, сохранить число, изменить его или вывести в консоль. Сначала преподаватель показывает и объясняет переход; угадывать незнакомое не нужно.</p>
+</header>
+<section class="panel" style="margin:20px 0">
+<h2>Пример из жизни: две записи одной мерки</h2>
+<p>Представь: в рабочем блокноте записана мерка — 10 сантиметров. Перед уточнением ты переписываешь число на отдельный листок. Потом исправляешь мерку в блокноте на 7. На листке по-прежнему 10: исправление одной записи не переписывает другую.</p>
+<p>В коде <code>length</code> — рабочая мерка, <code>savedLength</code> — сохранённая мерка. Английское <code>length</code> означает «длина», <code>saved</code> — «сохранённая». Здесь обе мерки — целые числа сантиметров.</p>
+<p class="small">Граница сравнения: это записи чисел, а не сама ткань. Переменные не являются бумажками внутри компьютера. Мы показываем их текущие значения, а не устройство оперативной памяти.</p>
+</section>
+<div class="legend" aria-label="Условные обозначения">
+<span><i class="swatch" aria-hidden="true"></i>Синий — выполненное действие</span>
+<span><i class="swatch result" aria-hidden="true"></i>Зелёный — итог вычисления</span>
+<span><i class="swatch console" aria-hidden="true"></i>Консоль — отдельный вывод</span>
+</div>
+<section class="step" aria-live="polite" aria-atomic="true">
+<span class="step-label" id="counter"></span>
+<h2 id="step-title"></h2>
+<p id="explanation"></p>
+</section>
+<div class="layout">
+<section class="panel">
+<h2>Рабочий пример Java</h2>
+<p class="small">Полный пример для файла <code>FabricExample.java</code>. Строки 3–7 — действия, которые будем разбирать. Подсветка означает: действие уже выполнено.</p>
+<ol class="code" id="code">
+<li><code>public class FabricExample {</code></li>
+<li><code>  public static void main(String[] args) {</code></li>
+<li><code>    int length = 10;</code></li>
+<li><code>    int savedLength = length;</code></li>
+<li><code>    length = length - 3;</code></li>
+<li><code>    System.out.println(savedLength);</code></li>
+<li><code>    System.out.println(length);</code></li>
+<li><code>  }</code></li>
+<li><code>}</code></li>
+</ol>
+<p class="hint">Ожидаемый вывод всей программы: сначала <strong>10</strong>, на следующей строке <strong>7</strong>. Ниже можно увидеть, когда появляется каждая строка.</p>
+</section>
+<div>
+<section class="panel">
+<div class="scope-title"><h2>Значения внутри <code>main</code></h2></div>
+<p class="small">Состояние после показанного действия. «Ещё нет» не означает ноль: строка создания пока не выполнена.</p>
+<table aria-label="Текущие значения переменных"><thead><tr><th>Тип</th><th>Имя</th><th>Значение</th></tr></thead><tbody>
+<tr><td>int</td><td><code>length</code></td><td id="length"></td></tr>
+<tr><td>int</td><td><code>savedLength</code></td><td id="saved"></td></tr>
+</tbody></table>
+</section>
+<section class="panel">
+<h2>Консоль: что программа вывела</h2>
+<pre class="console-output" id="console" aria-label="Вывод программы"></pre>
+<p class="hint">Консоль — область, где виден вывод запущенной программы. Это не место, куда в этом примере нужно вводить команды. Строки <code>println</code> пишутся в редакторе кода.</p>
+</section>
+</div>
+</div>
+<nav aria-label="Шаги разбора"><button id="prev" type="button">Назад</button><button id="next" class="primary" type="button">Показать следующий шаг</button></nav>
+<p class="hint">Кнопки перелистывают учебную схему. Они не запускают Java и не заменяют запуск в IDEA.</p>
+<section class="panel" style="margin-top:24px">
+<h2>Разбираем обозначения без спешки</h2>
+<p><code>int</code> — тип для целого числа. <code>int length = 10;</code> объявляет переменную с именем <code>length</code> и начальным значением 10. Имя помогает обращаться к этому значению позже. Точка с запятой завершает инструкцию.</p>
+<p><code>=</code> — присваивание: сначала вычисляем правую часть, затем записываем результат в переменную слева. В <code>length = length - 3;</code> справа сначала читается прежнее значение 10, получается 7, затем 7 записывается в <code>length</code>. Знак <code>-</code> обозначает вычитание.</p>
+<p><code>int savedLength = length;</code> читает число, которое сейчас находится в <code>length</code>, и сохраняет его в новой переменной. Для этих целых чисел это копия значения, а не связь, которая обновляет обе переменные.</p>
+<p><code>System.out.println(...)</code> выводит указанное в круглых скобках значение и переходит на новую строку. Само создание или изменение переменной ничего не печатает. Память нужна программе для работы со значениями; вывод на экран — отдельное действие.</p>
+<details><summary>Что за строки окружают наши пять действий?</summary>
+<p><code>public class FabricExample</code> объявляет класс — именованный блок, в котором размещён этот код. <code>public</code> означает доступность извне, <code>class</code> — объявление класса, <code>FabricExample</code> — выбранное имя. Фигурные скобки показывают начало и конец блока.</p>
+<p><code>main</code> — метод, с которого начинается выполнение при таком запуске этого класса. <code>static</code> позволяет запустить его без создания отдельного объекта класса; <code>void</code> означает, что метод не возвращает значение вызывающему коду. <code>String[] args</code> — место для текстовых аргументов запуска, в нашем расчёте они не используются. Объекты, массивы и возврат сейчас осваивать не требуется: преподаватель объясняет назначение оболочки, а наша цель — пять действий внутри неё.</p>
+<p>В этой простой последовательности действия выполняются по порядку. Нельзя обобщать это на все строки любого Java-файла: другие методы выполняются при вызове, а условия и циклы меняют путь выполнения.</p>
+</details>
+</section>
+<footer>
+<p>Учебная схема · шаблон v1 · тема v1 · 14 октября 2026</p>
+<p>Здесь показаны только локальные целочисленные значения во время выполнения main. Это не схема физических ячеек памяти. Состояния заданы автором и не являются результатом запуска Java или снимками отладчика.</p>
+<p>Это разобранный сторонний пример, а не решение задания с пуговицами. После объяснения преподаватель помогает применить знакомое действие в коде Маши.</p>
+</footer>
+<noscript>Для перелистывания шагов включите JavaScript. Код, объяснение и ожидаемый итог доступны выше без него.</noscript>
+</main>
+<script>
+const steps = [
+{title:'Вошли в main; первая инструкция ещё впереди',text:'Пока ни одна из пяти инструкций не выполнена. Переменные length и savedLength ещё не созданы, в консоль ничего не выведено.',line:0,length:null,saved:null,output:''},
+{title:'Создали length со значением 10',text:'Выполнена строка 3: int length = 10. Появилась переменная для целого числа. Число уже можно использовать в следующих действиях, хотя в консоли пока пусто.',line:3,length:10,saved:null,output:''},
+{title:'Скопировали текущее число в savedLength',text:'Выполнена строка 4. Справа прочитали length: сейчас там 10. Создали savedLength и записали в неё это число. Теперь две переменные содержат по 10. Вывода ещё не было.',line:4,length:10,saved:10,output:''},
+{title:'Изменили только length: 10 − 3 = 7',text:'Выполнена строка 5. Справа прочитали прежние 10, вычли 3 и получили 7. Затем записали 7 в length. Сохранённая мерка savedLength осталась 10. Консоль по-прежнему пустая.',line:5,length:7,saved:10,output:''},
+{title:'Вывели savedLength — в консоли появилось 10',text:'Выполнена строка 6. println прочитал savedLength и вывел 10. Обе переменные сохранили свои значения: вывод не забирает число из переменной.',line:6,length:7,saved:10,output:'10'},
+{title:'Вывели length — следующей строкой появилось 7',text:'Выполнена строка 7. println прочитал length и вывел 7. Теперь в консоли две строки: 10 и 7. Мы остановились после последней инструкции внутри main.',line:7,length:7,saved:10,output:'10\n7'}
+];
+let index=0;
+const byId=id=>document.getElementById(id);
+function render(){
+ const step=steps[index];
+ byId('counter').textContent=`Состояние ${index + 1} из ${steps.length}`;
+ byId('step-title').textContent=step.title;
+ byId('explanation').textContent=step.text;
+ byId('length').textContent=step.length===null?'Ещё нет':step.length;
+ byId('saved').textContent=step.saved===null?'Ещё нет':step.saved;
+ byId('console').textContent=step.output||'Пока пусто — вывода не было';
+ document.querySelectorAll('#code li').forEach((li,i)=>li.classList.toggle('active',i+1===step.line));
+ byId('prev').disabled=index===0;
+ byId('next').disabled=index===steps.length-1;
+}
+byId('prev').addEventListener('click',()=>{if(index>0){index--;render();}});
+byId('next').addEventListener('click',()=>{if(index<steps.length-1){index++;render();}});
+render();
+</script>
+</body>
+</html>
